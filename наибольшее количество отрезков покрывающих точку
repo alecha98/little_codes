@@ -1,0 +1,47 @@
+#include <iostream>
+#include <vector>
+#include <cstdio>
+#include <cmath>
+#include <iomanip>
+#include <cstdlib>
+using namespace std;
+int L[100000];
+int R[100000];
+struct Segment{
+    bool l = false;
+    int c;
+};
+
+
+int main() {
+    freopen("input.txt", "r", stdin);
+    int n, amount = 0, max_amount;
+    Segment segm[10000];
+    cin >> n;
+    for (int i = 0; i < n; i++) cin >> L[i] >> R[i];
+    for (int i = 0; i < n; i++) {
+        segm[i].c = R[i];
+        segm[i].l = false;
+    }
+    for (int i = 0; i < n; i++) {
+        segm[n + i].c = L[i];
+        segm[n + i].l = true;
+    }
+    for (int i = 0; i < 2 * n; i++){
+        for (int j = i + 1; j < 2 * n; j++) {
+            if ((segm[i].c > segm[j].c) || (segm[i].c == segm[j].c && segm[j].l))
+                swap(segm[i], segm[j]);
+        }
+    }
+    for (int i = 0; i < 2 * n; i++){
+        if (segm[i].l)
+            amount += 1;
+        else
+            amount -= 1;
+        cout << segm[i].c << ' ' << amount<< endl;
+    }
+
+
+
+    return 0;
+}
