@@ -1,0 +1,66 @@
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        string answer;
+        vector<int> substring(256, 0);
+        vector<int> current(256, 0);
+        for (int i = 0; i < t.size(); i++) {
+            substring[t[i] ] += 1;
+            //cout << t[i] - 'A' << ' ' << endl;
+        }
+        
+        int left = 0, right = 0;
+        bool check = false;
+        while(!check && right < s.size()) {
+            current[s[right]] += 1;
+           // cout << s[right] << ' ';
+            for (int i = 0; i < 256; i++) {
+                if (current[i] < substring[i]) {
+                    check = false;
+                    break;
+                }
+                check = true;
+            }
+            if (!check)
+                right += 1;
+        }
+        
+        pair<int, int> pointers = {-1, -1};
+        if (check)
+            pointers = {left, right};
+        //cout << pointers.first;
+        while (left < right) {
+            if (check) {
+                current[s[left]] -= 1;
+                left += 1;
+                //cout << left << '!';
+            }
+            else if (right < s.size() - 1){
+                right += 1;
+                current[s[right]] += 1;
+            }
+            
+            else 
+                break;
+            
+            for (int i = 0; i < 256; i++) {
+                if (current[i] < substring[i]) {
+                    //cout << "ok";
+                    check = false;
+                    break;
+                }
+                check = true;
+            }
+            if (check && right - left < pointers.second - pointers.first) {
+                pointers = {left, right};
+            }
+        }
+        
+        for (int i = pointers.first; i <= pointers.second; i++) {
+            if (pointers.first >= 0)
+                answer.push_back(s[i]);
+        }
+        
+        return answer;
+    }
+};
