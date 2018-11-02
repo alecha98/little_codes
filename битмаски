@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <cstdio>
+#include <cmath>
+#include <iomanip>
+#include <cstdlib>
+#include <climits>
+#include <queue>
+#include <set>
+#include <string>
+
+using namespace std;
+int satisfied[18];
+int rools[18][18];
+long long conditions[1000000][18];
+
+int main() {
+    //freopen("input.txt", "r", stdin);
+    int n, m, k;
+    cin >> n >> m >> k;
+    for (int i = 0; i < n; i++) {
+        cin >> satisfied[i];
+    }
+    for (int i = 0; i < k; i++) {
+        int first, second, weight;
+        cin >> first >> second >> weight;
+        rools[first - 1][second - 1] = weight;
+    }
+    long long answer = 0;
+
+    for (int mask = 1; mask < (1 << n); mask++) { // идем по всем кодам
+        for (int last_food = 0; last_food < n; last_food++) {// идем по всем последним блюдам
+
+            if (mask & (1 << last_food)) {// проверяем что последнее блюдо вообще было съедено
+                int parent = mask ^ (1 << last_food); // вводим чиселку кодировки, в которой мы еще не съели это блюдо
+                if (parent == 0) {
+                    conditions[mask][last_food] = satisfied[last_food];
+                }
+                else {
+                    for (int last_parent_food = 0; last_parent_food < n; last_parent_food++) {
+                        if (parent & (1 << last_parent_food)) { // смотрим, чтобы наш предок был корректен
+                            conditions[mask][last_food] = max(conditions[mask][last_food],
+                                    (conditions[parent][last_parent_food] + rools[last_parent_food][last_food] + satisfied[last_food]));
+
+                        }
+                    }
+                }
+                int temp_mask = mask;
+                int food_count = 0;
+                while (temp_mask > 0) {
+                    food_count += temp_mask & 1;
+                    temp_mask >>= 1;
+                }
+                if (food_count == m) {
+                    answer = max(answer, conditions[mask][last_food]);
+                }
+            }
+        }
+    }
+    cout << answer;
+
+    return 0;
+
+
+}
